@@ -9,6 +9,8 @@ const CATEGORY_COLORS = {
   'EdTech':          '#2563EB',
   'AI in Education': '#7C3AED',
   'AI News':         '#DB2777',
+  'Placements':      '#F05136',
+  'Jobs & Hiring':   '#16A34A',
   'Schools':         '#E11D48',
   'General':         '#64748B',
 }
@@ -21,6 +23,8 @@ const CATEGORY_EMOJI = {
   'EdTech': '💻',
   'AI in Education': '🤖',
   'AI News': '✨',
+  'Placements': '💼',
+  'Jobs & Hiring': '📈',
   'Schools': '🏫',
   'General': '📰',
 }
@@ -35,14 +39,18 @@ export default function ArticleCard({ article, isRead, onMarkRead }) {
     : 'recently'
 
   const showImage = article.image_url && !imgFailed
+  const hasValidUrl = article.url && article.url.startsWith('http')
 
   return (
     <a
       className={`article-card ${isRead ? 'read' : ''}`}
-      href={article.url}
-      target="_blank"
+      href={hasValidUrl ? article.url : undefined}
+      target={hasValidUrl ? '_blank' : undefined}
       rel="noopener noreferrer"
-      onClick={() => onMarkRead(article.id)}
+      onClick={(e) => {
+        if (!hasValidUrl) { e.preventDefault(); return }
+        onMarkRead(article.id)
+      }}
     >
       <div className="card-body">
         <div className="card-text">

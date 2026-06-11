@@ -1,5 +1,7 @@
 const CATEGORIES = [
   'all',
+  'Placements',
+  'Jobs & Hiring',
   'University',
   'AI in Education',
   'AI News',
