@@ -1,11 +1,21 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { formatDistanceToNow } from 'date-fns'
 import Header from './components/Header'
 import FilterBar from './components/FilterBar'
 import ArticleCard from './components/ArticleCard'
 import { useArticles, useSources } from './hooks/useArticles'
+import { useTheme } from './hooks/useTheme'
 import './App.css'
 
+function greeting() {
+  const h = new Date().getHours()
+  if (h < 12) return 'Good morning'
+  if (h < 17) return 'Good afternoon'
+  return 'Good evening'
+}
+
 export default function App() {
+  const { theme, toggle } = useTheme()
   const [filters, setFilters] = useState({ category: 'all', source: 'all', search: '' })
   const [readIds, setReadIds] = useState(() => {
     try { return JSON.parse(localStorage.getItem('fp_read_ids') || '[]') } catch { return [] }
@@ -26,14 +36,29 @@ export default function App() {
 
   return (
     <div className="app">
-      <Header onRefresh={refetch} lastFetched={lastFetched} loading={loading} />
+      <Header
+        onRefresh={refetch}
+        loading={loading}
+        theme={theme}
+        onToggleTheme={toggle}
+      />
 
       <main className="main-content">
+        <div className="hero-strip">
+          <span className="hero-greeting">
+            {greeting()} — <strong>here's what's happening in education</strong>
+          </span>
+          {lastFetched && (
+            <span className="last-updated">
+              Updated {formatDistanceToNow(lastFetched, { addSuffix: true })}
+            </span>
+          )}
+        </div>
+
         <FilterBar
           filters={filters}
           onChange={setFilters}
           sources={sources}
-          articleCount={articles.length}
         />
 
         {unreadCount > 0 && (
@@ -45,9 +70,6 @@ export default function App() {
 
         {error && (
           <div className="error-state">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
             <p>Could not load articles. Check your connection.</p>
             <button onClick={refetch}>Try again</button>
           </div>
@@ -55,14 +77,15 @@ export default function App() {
 
         {loading && articles.length === 0 && (
           <div className="loading-grid">
-            {[...Array(6)].map((_, i) => (
+            {[...Array(5)].map((_, i) => (
               <div key={i} className="skeleton-card">
-                <div className="sk sk-meta" />
-                <div className="sk sk-title" />
-                <div className="sk sk-title short" />
-                <div className="sk sk-summary" />
-                <div className="sk sk-summary short" />
-                <div className="sk sk-link" />
+                <div className="sk-col">
+                  <div className="sk sk-meta" />
+                  <div className="sk sk-title" />
+                  <div className="sk sk-title short" />
+                  <div className="sk sk-summary" />
+                </div>
+                <div className="sk sk-thumb" />
               </div>
             ))}
           </div>
@@ -90,7 +113,7 @@ export default function App() {
 
       <footer className="app-footer">
         <span>FP EduDesk · FACE Prep Internal</span>
-        <span>Refreshes every 2 hours</span>
+        <span>Auto-refreshes every 2 hours</span>
       </footer>
     </div>
   )

@@ -1,26 +1,34 @@
+import { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 
 const CATEGORY_COLORS = {
-  'Policy': '#6366F1',
-  'Exams': '#F59E0B',
-  'Higher Ed': '#10B981',
-  'EdTech': '#3B82F6',
-  'Schools': '#EC4899',
-  'General': '#6B7280'
+  'Policy':          '#6366F1',
+  'Exams':           '#D97706',
+  'Higher Ed':       '#059669',
+  'University':      '#0891B2',
+  'EdTech':          '#2563EB',
+  'AI in Education': '#7C3AED',
+  'AI News':         '#DB2777',
+  'Schools':         '#E11D48',
+  'General':         '#64748B',
 }
 
-const SOURCE_ICONS = {
-  'Google News': '🔍',
-  'The Hindu': '📰',
-  'Indian Express': '📋',
-  'NDTV': '📺',
-  'Careers360': '🎓',
-  'Times of India': '🗞️'
+const CATEGORY_EMOJI = {
+  'Policy': '🏛️',
+  'Exams': '📝',
+  'Higher Ed': '🎓',
+  'University': '🏫',
+  'EdTech': '💻',
+  'AI in Education': '🤖',
+  'AI News': '✨',
+  'Schools': '🏫',
+  'General': '📰',
 }
 
 export default function ArticleCard({ article, isRead, onMarkRead }) {
+  const [imgFailed, setImgFailed] = useState(false)
   const categoryColor = CATEGORY_COLORS[article.category] || CATEGORY_COLORS['General']
-  const sourceIcon = SOURCE_ICONS[article.source] || '📡'
+  const emoji = CATEGORY_EMOJI[article.category] || '📰'
 
   const timeAgo = article.published_at
     ? formatDistanceToNow(new Date(article.published_at), { addSuffix: true })
@@ -31,30 +39,51 @@ export default function ArticleCard({ article, isRead, onMarkRead }) {
     window.open(article.url, '_blank', 'noopener,noreferrer')
   }
 
-  return (
-    <article className={`article-card ${isRead ? 'read' : ''}`}>
-      <div className="article-meta">
-        <span className="source-badge">
-          <span className="source-icon">{sourceIcon}</span>
-          {article.source}
-        </span>
-        <span
-          className="category-badge"
-          style={{ '--cat-color': categoryColor }}
-        >
-          {article.category || 'General'}
-        </span>
-        <span className="time-ago">{timeAgo}</span>
-      </div>
+  const showImage = article.image_url && !imgFailed
 
-      <h2 className="article-title">{article.title}</h2>
+  return (
+    <article
+      className={`article-card ${isRead ? 'read' : ''}`}
+      onClick={handleClick}
+      role="link"
+      tabIndex={0}
+      onKeyDown={e => { if (e.key === 'Enter') handleClick() }}
+    >
+      <div className="card-body">
+        <div className="card-text">
+          <div className="article-meta">
+            <span className="source-badge">{article.source}</span>
+            <span
+              className="category-badge"
+              style={{ '--cat-color': categoryColor }}
+            >
+              {article.category || 'General'}
+            </span>
+            <span className="time-ago">{timeAgo}</span>
+          </div>
+
+          <h2 className="article-title">{article.title}</h2>
+        </div>
+
+        <div className="card-thumb">
+          {showImage ? (
+            <img
+              src={article.image_url}
+              alt=""
+              loading="lazy"
+              onError={() => setImgFailed(true)}
+            />
+          ) : (
+            <div className="thumb-fallback">{emoji}</div>
+          )}
+        </div>
+      </div>
 
       {article.ai_summary && (
         <div className="ai-summary">
           <span className="ai-label">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-              <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+            <svg className="ai-spark" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 1l2.4 7.2L22 10l-7.6 1.8L12 19l-2.4-7.2L2 10l7.6-1.8L12 1z"/>
             </svg>
             AI Summary
           </span>
@@ -63,14 +92,12 @@ export default function ArticleCard({ article, isRead, onMarkRead }) {
       )}
 
       <div className="article-footer">
-        <button className="read-link" onClick={handleClick}>
+        <span className="read-link">
           Read full article
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
-            <polyline points="15 3 21 3 21 9"/>
-            <line x1="10" y1="14" x2="21" y2="3"/>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M7 17L17 7M7 7h10v10"/>
           </svg>
-        </button>
+        </span>
         {isRead && <span className="read-indicator">✓ Read</span>}
       </div>
     </article>
