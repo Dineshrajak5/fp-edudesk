@@ -12,7 +12,7 @@ export function useTheme() {
     localStorage.setItem('fp_theme', theme)
     // Update theme-color meta for PWA status bar
     const meta = document.querySelector('meta[name="theme-color"]')
-    if (meta) meta.setAttribute('content', theme === 'dark' ? '#10182B' : '#FFFFFF')
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#FFFFFF')
   }, [theme])
 
   const toggle = () => setTheme(t => (t === 'dark' ? 'light' : 'dark'))
