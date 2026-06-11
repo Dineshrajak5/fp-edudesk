@@ -34,20 +34,15 @@ export default function ArticleCard({ article, isRead, onMarkRead }) {
     ? formatDistanceToNow(new Date(article.published_at), { addSuffix: true })
     : 'recently'
 
-  const handleClick = () => {
-    onMarkRead(article.id)
-    window.open(article.url, '_blank', 'noopener,noreferrer')
-  }
-
   const showImage = article.image_url && !imgFailed
 
   return (
-    <article
+    <a
       className={`article-card ${isRead ? 'read' : ''}`}
-      onClick={handleClick}
-      role="link"
-      tabIndex={0}
-      onKeyDown={e => { if (e.key === 'Enter') handleClick() }}
+      href={article.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={() => onMarkRead(article.id)}
     >
       <div className="card-body">
         <div className="card-text">
@@ -100,6 +95,6 @@ export default function ArticleCard({ article, isRead, onMarkRead }) {
         </span>
         {isRead && <span className="read-indicator">✓ Read</span>}
       </div>
-    </article>
+    </a>
   )
 }

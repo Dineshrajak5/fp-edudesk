@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { subscribeToPush, unsubscribeFromPush, getNotificationStatus } from '../lib/notifications'
+import Logo from './Logo'
 
 export default function Header({ onRefresh, loading, theme, onToggleTheme }) {
   const [notifStatus, setNotifStatus] = useState('default')
@@ -27,11 +28,10 @@ export default function Header({ onRefresh, loading, theme, onToggleTheme }) {
   return (
     <header className="app-header">
       <div className="header-left">
-        <div className="logo-mark">
-          <span className="logo-fp">FP</span>
-        </div>
+        <Logo height={24} />
+        <div className="header-divider" />
         <div className="header-titles">
-          <h1 className="app-name">Edu<span className="accent">Desk</span></h1>
+          <h1 className="app-name">EduDesk</h1>
           <span className="app-tagline">India Education Intelligence</span>
         </div>
       </div>
